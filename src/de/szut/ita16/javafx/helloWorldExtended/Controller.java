@@ -10,7 +10,7 @@ import lombok.extern.java.Log;
 
 import java.util.logging.Level;
 
-@Log()
+@Log
 public class Controller {
     @FXML
     private TextField txtName;
@@ -24,6 +24,7 @@ public class Controller {
                     String.format("Hello %s!", name));
             alert.show();
         }
+        log.info(actionEvent.toString());
     }
 
     public void handleTxtNameKey(KeyEvent keyEvent) {

@@ -25,6 +25,9 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
+        Logger controllerLogger = Logger.getLogger(Controller.class.getName());
+        controllerLogger.setLevel(Level.WARNING);
+
         launch(args);
     }
 }

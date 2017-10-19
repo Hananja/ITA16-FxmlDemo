@@ -13,8 +13,11 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.szut.ita16.javafx.helloWorldExtended.Controller">
    <children>
-      <TextField fx:id="txtName" onAction="#handleBtnHelloClicked" onKeyReleased="#handleTxtNameKey" promptText="please enter your name" HBox.hgrow="ALWAYS" />
-      <Button fx:id="btnHello" disable="true" mnemonicParsing="false" onAction="#handleBtnHelloClicked" text="Say Hello!" />
+      <TextField fx:id="txtName" id="nameInput" onAction="#handleBtnHelloClicked"
+                 onKeyReleased="#handleTxtNameKey"
+                 promptText="please enter your name" HBox.hgrow="ALWAYS" />
+      <Button fx:id="btnHello" disable="true" mnemonicParsing="false"
+              onAction="#handleBtnHelloClicked" text="Say Hello!" />
    </children>
    <padding>
       <Insets left="5.0" right="5.0" />
