@@ -3,7 +3,6 @@
     <properties maven-id="org.projectlombok:lombok:1.16.18" />
     <CLASSES>
       <root url="jar://$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.16.18/lombok-1.16.18.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.16.18/lombok-1.16.18.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
