@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <RadioButton mnemonicParsing="false" selected="true" text="Java">
+         <toggleGroup>
+            <ToggleGroup fx:id="radioGroup" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton mnemonicParsing="false" text="Python" toggleGroup="$radioGroup" />
+      <RadioButton mnemonicParsing="false" text="C++" toggleGroup="$radioGroup" />
+      <RadioButton mnemonicParsing="false" text="Fortran" toggleGroup="$radioGroup" />
+   </children>
+</VBox>
