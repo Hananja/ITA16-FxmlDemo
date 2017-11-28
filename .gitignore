@@ -15,6 +15,9 @@
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 
+# sonarlint
+.idea/sonarlint/
+
 # Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
