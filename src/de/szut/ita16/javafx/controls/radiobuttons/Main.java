@@ -1,4 +1,4 @@
-package de.szut.ita16.javafx.helloWorldActionListener;
+package de.szut.ita16.javafx.controls.radiobuttons;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,14 +17,14 @@ public class Main extends Application {
         // .openStream() hinter dem getResource(), damit die nicht statische
         // .load() Methode auf dem loader-Objekt aufgerufen wird
         Parent root = loader.load(
-                getClass().getResource("hello.fxml").openStream());
+                getClass().getResource("gui.fxml").openStream());
 
         // Controller aus dem Loader auslesen, um darauf die init()-
         // Methode aufrufen zu können (GUI ist fertig, aber unsichtbar)
         Controller controller = loader.getController();
         controller.init(); // initialisiert die GUI
 
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Radio Button Demo");
         primaryStage.setScene(
                 new Scene(root, 300, 275));
         primaryStage.show(); // Anzeigen
