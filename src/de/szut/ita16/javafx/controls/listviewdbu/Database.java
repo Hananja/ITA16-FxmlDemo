@@ -17,7 +17,7 @@ public class Database {
             // create table if not exists
             try (Statement statement = connection.createStatement()) {
                 statement.execute("CREATE TABLE IF NOT EXISTS items (" +
-                        " ID INTEGER PRIMARY KEY AUTOINCREMENT, value VARCHAR(20));");
+                        " ID INTEGER PRIMARY KEY, value VARCHAR(20));");
             }
         } catch (SQLException e) {
             log.severe( "Error while connecting DB" + e.toString());
@@ -31,14 +31,16 @@ public class Database {
      *
      * @return List of items or null on error
      */
-    public List<String> getItems() {
+    public List<Item> getItems() {
         try {
             try (Statement statement = connection.createStatement()) {
                 ResultSet result;
-                result = statement.executeQuery("SELECT value FROM items;");
-                List<String> returnval = new ArrayList<>(result.getFetchSize());
+                result = statement.executeQuery("SELECT id, value FROM items;");
+                List<Item> returnval = new ArrayList<>(result.getFetchSize());
                 while (result.next()) {
-                    returnval.add(result.getString(1));
+                    returnval.add(new Item(
+                            result.getInt(1) /* primary key */,
+                            result.getString(2) /* value */ ));
                 }
                 return returnval;
             }
@@ -50,27 +52,46 @@ public class Database {
     }
 
     /** Add item to datababase
-     * @param text text of item to add
+     * @param item new item to add
      */
-    public void addItem( String text ) {
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO items (value) VALUES (?);")) {
-            statement.setString(1, text);
-            statement.execute();
+    public void addItem( Item item ) {
+        if( item.getId() != null ) { // item is not new
+            throw new IllegalArgumentException("Item has primary key (not new).");
+        }
+
+        // get new primaty key
+        try (Statement statement = connection.createStatement()) {
+            ResultSet result = statement.executeQuery("SELECT MAX(ID) + 1 AS newid FROM items;");
+            int newID = result.getInt(1);
+            item.setId(newID);
+
+            try (PreparedStatement insertstatement = connection.prepareStatement(
+                    "INSERT INTO items (id, value) VALUES (?,?);")) {
+                insertstatement.setInt(1, item.getId());
+                insertstatement.setString(2, item.getValue());
+                insertstatement.execute();
+            } catch (SQLException e) {
+                log.severe("SQL Insert error " + e);
+            }
         } catch (SQLException e) {
-            log.severe("SQL Insert error " + e);
+            log.severe("SQL Primary Key Discovery error " + e);
         }
     }
 
     /** Remove an element from databas
      *
-     * @param text text of items to delete
+     * @param item item to delete
      * @return number of deleted items or -1 on error
      *
      * FIXME: ensure deletion of only one item according to primary key
      */
-    public int deleteItem( String text ) {
-        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM items WHERE value == ?;")) {
-            statement.setString(1, text);
+    public int deleteItem( Item item ) {
+        if( item.getId() == null ) {
+            throw new IllegalArgumentException("no existing item");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM items WHERE id == ?;")) {
+            statement.setInt(1, item.getId());
             return statement.executeUpdate();
         } catch (SQLException e) {
             log.severe("SQL Delete error " + e);
@@ -78,19 +99,23 @@ public class Database {
         return -1;
     }
 
+    // TODO: implement update during winter holydays
+
     public static void main(String args[]) {
         Database db = new Database();
-        db.addItem("Test 1");
-        db.addItem("Test 2");
-        db.addItem("Test 3");
+        db.addItem(new Item("Test 1"));
+        db.addItem(new Item("Test 2"));
+        db.addItem(new Item("Test 3"));
 
-        for( String item: db.getItems()) {
+        for( Item item: db.getItems()) {
             System.out.println(item);
         }
 
-        db.deleteItem("Test 1");
+        System.out.println("---");
 
-        for( String item: db.getItems()) {
+        db.deleteItem(db.getItems().get(0)); // delete first one
+
+        for( Item item: db.getItems()) {
             System.out.println(item);
         }
     }
