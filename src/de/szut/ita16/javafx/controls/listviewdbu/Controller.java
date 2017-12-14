@@ -66,7 +66,9 @@ public class Controller {
 
     public void onBtnRemove(ActionEvent actionEvent) {
         // FIXME: implement multi selections
-        model.remove(listMain.getSelectionModel().getSelectedIndex());
+
+        // importand: delete from database first
         database.deleteItem(listMain.getSelectionModel().getSelectedItem());
+        model.remove(listMain.getSelectionModel().getSelectedIndex());
     }
 }
