@@ -15,31 +15,34 @@ import java.util.Optional;
 
 public class Controller {
     @FXML
-    private ListView<String> listMain;
+    private ListView<Item> listMain;
     @FXML
     private Button btnInsert;
     @FXML
     private Button btnRemove;
 
-    ObservableList<String> model;
+    private ObservableList<Item> model;
+    private Database database;
 
     public void init() {
         // set data model
-        model = FXCollections.observableArrayList(
-                "Test 2", "Test 1", "Test 3");
+        database = new Database();
+        model = FXCollections.observableArrayList( database.getItems() );
 
+        // FIXME: adapt to Item
         // optional: sort list alphabetically
         // (otherwise add model to listMain directly)
-        SortedList<String> sortedList = new SortedList<String>(
-                model , String.CASE_INSENSITIVE_ORDER.reversed());
-        listMain.setItems(sortedList);
+        // SortedList<String> sortedList = new SortedList<String>(
+        //        model , String.CASE_INSENSITIVE_ORDER.reversed());
+
+        listMain.setItems(model);
 
         // initial button state
         updateBtnRemove();
 
         // selection change should update button state
         listMain.getSelectionModel().getSelectedItems()
-                .addListener((ListChangeListener<String>) c -> updateBtnRemove());
+                .addListener((ListChangeListener<Item>) c -> updateBtnRemove());
     }
 
     /** enable or disable button for remove according to selection */
@@ -55,14 +58,15 @@ public class Controller {
         dialog.setHeaderText("Hier kann ein neuer Eintrag hinzugefügt werden");
         Optional<String> result = dialog.showAndWait(); // wait for user input
         if( result.isPresent() ) {
-            // add to list
-            model.add(result.get());
+            Item item = new Item(result.get());
+            item = database.addItem(item); // get Item with new id
+            model.add(item);
         }
     }
 
     public void onBtnRemove(ActionEvent actionEvent) {
         // FIXME: implement multi selections
         model.remove(listMain.getSelectionModel().getSelectedIndex());
+        database.deleteItem(listMain.getSelectionModel().getSelectedItem());
     }
-
 }

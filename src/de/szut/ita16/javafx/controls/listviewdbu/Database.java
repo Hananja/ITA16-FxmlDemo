@@ -54,7 +54,7 @@ public class Database {
     /** Add item to datababase
      * @param item new item to add
      */
-    public void addItem( Item item ) {
+    public Item addItem(Item item ) {
         if( item.getId() != null ) { // item is not new
             throw new IllegalArgumentException("Item has primary key (not new).");
         }
@@ -70,12 +70,15 @@ public class Database {
                 insertstatement.setInt(1, item.getId());
                 insertstatement.setString(2, item.getValue());
                 insertstatement.execute();
+
+                return item;
             } catch (SQLException e) {
                 log.severe("SQL Insert error " + e);
             }
         } catch (SQLException e) {
             log.severe("SQL Primary Key Discovery error " + e);
         }
+        return null;
     }
 
     /** Remove an element from databas
