@@ -102,7 +102,19 @@ public class Database {
         return -1;
     }
 
-    // TODO: implement update during winter holydays
+    public void updateItem( Item item ) {
+        if( item.getId() == null ) {
+            throw new IllegalArgumentException("no existing item");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE items SET value = ? WHERE id == ?;")) {
+            statement.setString(1, item.getValue());
+            statement.setInt(2, item.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            log.severe("SQL Update error " + e);
+        }
+    }
 
     public static void main(String args[]) {
         Database db = new Database();
@@ -117,6 +129,12 @@ public class Database {
         System.out.println("---");
 
         db.deleteItem(db.getItems().get(0)); // delete first one
+
+        { // update: append U to new first item
+            Item item = db.getItems().get(0);
+            item.setValue(item.getValue() + "U");
+            db.updateItem(item);
+        }
 
         for( Item item: db.getItems()) {
             System.out.println(item);
