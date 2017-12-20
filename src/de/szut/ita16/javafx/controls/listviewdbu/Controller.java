@@ -8,8 +8,10 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.util.Callback;
 
 import java.util.Optional;
 
@@ -42,7 +44,27 @@ public class Controller {
 
         // selection change should update button state
         listMain.getSelectionModel().getSelectedItems()
-                .addListener((ListChangeListener<Item>) c -> updateBtnRemove());
+                .addListener((ListChangeListener<Item>)
+                        c -> Controller.this.updateBtnRemove());
+
+        listMain.setCellFactory(new Callback<ListView<Item>, ListCell<Item>>() {
+            @Override
+            public ListCell<Item> call(ListView<Item> param) {
+                return new ListCell<Item>(){
+                    @Override
+                    protected void updateItem(Item item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            setText(item.getValue());
+                        }
+                    }
+                };
+            }
+        });
     }
 
     /** enable or disable button for remove according to selection */
@@ -67,7 +89,7 @@ public class Controller {
     public void onBtnRemove(ActionEvent actionEvent) {
         // FIXME: implement multi selections
 
-        // importand: delete from database first
+        // important: delete from database first
         database.deleteItem(listMain.getSelectionModel().getSelectedItem());
         model.remove(listMain.getSelectionModel().getSelectedIndex());
     }
