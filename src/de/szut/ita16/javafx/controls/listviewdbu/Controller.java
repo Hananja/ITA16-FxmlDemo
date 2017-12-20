@@ -1,6 +1,5 @@
 package de.szut.ita16.javafx.controls.listviewdbu;
 
-import com.sun.javafx.collections.ObservableSequentialListWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -11,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
-import javafx.util.Callback;
 
 import java.util.Optional;
 
@@ -34,10 +32,11 @@ public class Controller {
         // FIXME: adapt to Item
         // optional: sort list alphabetically
         // (otherwise add model to listMain directly)
-        // SortedList<String> sortedList = new SortedList<String>(
-        //        model , String.CASE_INSENSITIVE_ORDER.reversed());
+        SortedList<Item> sortedList = new SortedList<Item>(
+                model,
+                (o1, o2) -> o1.getValue().compareToIgnoreCase(o2.getValue()));
 
-        listMain.setItems(model);
+        listMain.setItems(sortedList);
 
         // initial button state
         updateBtnRemove();
@@ -47,10 +46,7 @@ public class Controller {
                 .addListener((ListChangeListener<Item>)
                         c -> Controller.this.updateBtnRemove());
 
-        listMain.setCellFactory(new Callback<ListView<Item>, ListCell<Item>>() {
-            @Override
-            public ListCell<Item> call(ListView<Item> param) {
-                return new ListCell<Item>(){
+        listMain.setCellFactory( listView -> new ListCell<Item>() {
                     @Override
                     protected void updateItem(Item item, boolean empty) {
                         super.updateItem(item, empty);
@@ -62,9 +58,8 @@ public class Controller {
                             setText(item.getValue());
                         }
                     }
-                };
-            }
-        });
+                });
+
     }
 
     /** enable or disable button for remove according to selection */
