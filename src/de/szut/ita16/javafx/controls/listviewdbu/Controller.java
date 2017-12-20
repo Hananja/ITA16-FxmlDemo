@@ -29,7 +29,6 @@ public class Controller {
         database = new Database();
         model = FXCollections.observableArrayList( database.getItems() );
 
-        // FIXME: adapt to Item
         // optional: sort list alphabetically
         // (otherwise add model to listMain directly)
         SortedList<Item> sortedList = new SortedList<Item>(
@@ -62,6 +61,8 @@ public class Controller {
 
     }
 
+    // TODO: implement Update during Winter Holydays
+
     /** enable or disable button for remove according to selection */
     public void updateBtnRemove() {
         btnRemove.setDisable(!(listMain
@@ -88,4 +89,6 @@ public class Controller {
         database.deleteItem(listMain.getSelectionModel().getSelectedItem());
         model.remove(listMain.getSelectionModel().getSelectedIndex());
     }
+
+
 }
