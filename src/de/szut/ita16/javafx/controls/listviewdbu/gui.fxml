@@ -20,6 +20,7 @@
          <children>
             <Button fx:id="btnInsert" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBtnInsert" prefHeight="25.0" prefWidth="25.0" text="+" />
             <Button fx:id="btnRemove" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBtnRemove" prefHeight="25.0" prefWidth="25.0" text="-" />
+            <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#onBtnEdit" text="Edit" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
