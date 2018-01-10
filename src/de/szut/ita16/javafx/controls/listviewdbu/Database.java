@@ -107,7 +107,8 @@ public class Database {
             throw new IllegalArgumentException("no existing item");
         }
 
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE items SET value = ? WHERE id == ?;")) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE items SET value = ? WHERE id == ?;")) {
             statement.setString(1, item.getValue());
             statement.setInt(2, item.getId());
             statement.executeUpdate();

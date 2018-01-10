@@ -3,6 +3,7 @@ package de.szut.ita16.javafx.controls.listviewdbu;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -62,8 +63,6 @@ public class Controller {
 
     }
 
-    // TODO: implement Update during Winter Holydays
-
     /** enable or disable buttons for remove according to selection */
     public void updateBtns() {
         btnRemove.setDisable(!(listMain
@@ -101,7 +100,7 @@ public class Controller {
         dialog.setHeaderText("Hier kann der Wert eines Eintrags bearbeitet werden");
         Optional<String> newvalue = dialog.showAndWait(); // wait for user input
         if( newvalue.isPresent() ) {
-            // woraround: remove old item and add new one, because item is not observable
+            // workaround: remove old item and add new one, because item is not observable
             // (alternative: warp item with properties and use extractor:
             // see https://docs.oracle.com/javase/8/javafx/api/javafx/collections/FXCollections.html#observableArrayList-javafx.util.Callback-)
             model.remove(item);
