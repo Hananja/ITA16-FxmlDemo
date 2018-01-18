@@ -1,15 +1,18 @@
 package de.szut.ita16.javafx.controls.tableviewdbu;
 
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
+import javafx.util.Callback;
 
 import java.util.Optional;
 
@@ -17,7 +20,7 @@ public class Controller {
     @FXML
     private Button btnEdit;
     @FXML
-    private ListView<Item> listMain;
+    private TableView<Item> tableMain;
     @FXML
     private Button btnInsert;
     @FXML
@@ -31,44 +34,38 @@ public class Controller {
         database = new Database();
         model = FXCollections.observableArrayList( database.getItems() );
 
-        // optional: sort list alphabetically
-        // (otherwise add model to listMain directly)
-        SortedList<Item> sortedList = new SortedList<Item>(
-                model,
-                (o1, o2) -> o1.getValue().compareToIgnoreCase(o2.getValue()));
-
-        listMain.setItems(sortedList);
+        tableMain.setItems(model);
 
         // initial button state
         updateBtns();
 
         // selection change should update button states
-        listMain.getSelectionModel().getSelectedItems()
+        tableMain.getSelectionModel().getSelectedItems()
                 .addListener((ListChangeListener<Item>)
                         c -> Controller.this.updateBtns());
 
-        listMain.setCellFactory( listView -> new ListCell<Item>() {
-                    @Override
-                    protected void updateItem(Item item, boolean empty) {
-                        super.updateItem(item, empty);
+        TableColumn<Item,String> valueCol = new TableColumn<>("Value");
+        valueCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> param) {
+                // param.getValue() returns the Person instance for a particular TableView row
+                return new ReadOnlyObjectWrapper<>(param.getValue().getValue());
+            }
+        });
 
-                        if (empty || item == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            setText(item.getValue());
-                        }
-                    }
-                });
+        TableColumn<Item,Integer> countCol = new TableColumn<>("Count");
+        // alternative use of lambda notation
+        countCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getCount()));
+
+        tableMain.getColumns().setAll(valueCol, countCol);
 
     }
 
     /** enable or disable buttons for remove according to selection */
     public void updateBtns() {
-        btnRemove.setDisable(!(listMain
-                .getSelectionModel().getSelectedItems().size() > 0));
-        btnEdit.setDisable(!(listMain
-                .getSelectionModel().getSelectedItems().size() == 1));
+        btnRemove.setDisable(tableMain
+                .getSelectionModel().getSelectedItems().size() <= 0);
+        btnEdit.setDisable(tableMain
+                .getSelectionModel().getSelectedItems().size() != 1);
     }
 
     public void onBtnInsert(ActionEvent actionEvent) {
@@ -88,12 +85,12 @@ public class Controller {
         // FIXME: implement multi selections
 
         // important: delete from database first
-        database.deleteItem(listMain.getSelectionModel().getSelectedItem());
-        model.remove(listMain.getSelectionModel().getSelectedIndex());
+        database.deleteItem(tableMain.getSelectionModel().getSelectedItem());
+        model.remove(tableMain.getSelectionModel().getSelectedIndex());
     }
 
-    public void onBtnEdit(ActionEvent actionEvent) {
-        Item item = listMain.getSelectionModel().getSelectedItem();
+    public void onBtnEdit() {
+        Item item = tableMain.getSelectionModel().getSelectedItem();
         TextInputDialog dialog = new TextInputDialog(item.getValue());
         dialog.setTitle("Wert anpassen");
         dialog.setContentText("neuer Wert:");
@@ -106,7 +103,9 @@ public class Controller {
             model.remove(item);
             item.setValue(newvalue.get());
             database.updateItem(item);
-            model.add(item);
+            // removing and adding immediately again does not work
+            // workaround: add after list update
+            Platform.runLater(() -> model.add(item));
         }
     }
 }
